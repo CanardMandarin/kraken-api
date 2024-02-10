@@ -6,5 +6,4 @@ pub mod ignore;
 pub mod params;
 pub mod query;
 
-pub mod authenticated;
-pub mod public;
+pub mod spot;

@@ -2,7 +2,7 @@ use std::any;
 
 use async_trait::async_trait;
 use http::{header, Method, Request};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize};
 
 use crate::api::{
     client::{AsyncClient, Client},
@@ -10,6 +10,11 @@ use crate::api::{
     params::QueryParams,
     query::{url_to_http_uri, AsyncQuery, Query},
 };
+
+pub enum EndpointType {
+    Spot,
+    Futures,
+}
 
 /// A trait for providing the necessary information for a single REST API endpoint.
 pub trait Endpoint {
@@ -22,6 +27,11 @@ pub trait Endpoint {
     /// Whether this endpoint needs authorization.
     fn is_authenticated(&self) -> bool {
         false
+    }
+
+    /// Whether this endpoint needs authorization.
+    fn endpoint_type(&self) -> EndpointType {
+        EndpointType::Spot
     }
 
     /// Query parameters for the endpoint.
@@ -143,11 +153,19 @@ where
             });
         }
 
+        #[derive(Debug, Deserialize)]
+        struct ApiResponse<T> {
+            // error: Vec<Value>,
+            result: T,
+        }
+
         // Deserialize into whatever type the caller is asking.
-        serde_json::from_value::<T>(v.clone()).map_err(|e| ApiError::DataType {
-            typename: any::type_name::<T>(),
-            obj: v,
-            source: e,
-        })
+        serde_json::from_value::<ApiResponse<T>>(v.clone())
+            .map(|response| response.result)
+            .map_err(|e| ApiError::DataType {
+                typename: any::type_name::<T>(),
+                obj: v,
+                source: e,
+            })
     }
 }

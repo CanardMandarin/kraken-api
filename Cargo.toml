@@ -1,5 +1,5 @@
 [package]
-name = "bitfinex-api"
+name = "kraken-api"
 version = "0.1.0"
 edition = "2021"
 
@@ -23,6 +23,7 @@ async-trait = { version = "0.1.73" }
 thiserror = { version = "^1.0.48" }
 reqwest = { version = "0.11.20", features = ["blocking"] }
 derive_builder = "0.12.0"
+base64 = "0.21.7"
 
 [dev-dependencies]
 tokio = { version = "1.32.0", features = ["full"] }

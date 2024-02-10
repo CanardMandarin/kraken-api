@@ -20,52 +20,52 @@ pub enum RestError {
         source: http::Error,
     },
 
-    #[error("Communication with Bitfinex: {}", source)]
+    #[error("Communication with Kraken: {}", source)]
     Communication {
         #[from]
         source: reqwest::Error,
     },
 }
 
-const PUB_API_URL: &str = "https://api-pub.bitfinex.com";
-const AUTH_API_URL: &str = "https://api.bitfinex.com";
+const SPOT_API_URL: &str = "https://api.kraken.com";
+const FUTURES_API_URL: &str = "https://futures.kraken.com";
 
 #[derive(Debug)]
-pub struct Bitfinex {
+pub struct Kraken {
     /// The client to use for API calls.
     client: ReqClient,
 
-    /// The base URL to use for public API calls.
-    pub_rest_url: Url,
+    /// The base URL to use for spot API calls.
+    spot_api_url: Url,
 
-    /// The base URL to use for authenticated API calls.
-    authenticated_rest_url: Url,
+    /// The base URL to use for futures API calls.
+    futures_api_url: Url,
 
     /// The authentication information to use.
     auth: Option<Auth>,
 }
 
 #[derive(Debug)]
-pub struct AsyncBitfinex {
+pub struct AsyncKraken {
     /// The client to use for API calls.
     client: ReqAsyncClient,
 
-    /// The base URL to use for public API calls.
-    pub_rest_url: Url,
+    /// The base URL to use for spot API calls.
+    spot_api_url: Url,
 
-    /// The base URL to use for authenticated API calls.
-    authenticated_rest_url: Url,
+    /// The base URL to use for futures API calls.
+    futures_api_url: Url,
 
     /// The authentication information to use.
     auth: Option<Auth>,
 }
 
-impl Bitfinex {
+impl Kraken {
     pub fn new() -> Self {
         Self {
             client: ReqClient::new(),
-            pub_rest_url: Url::parse(PUB_API_URL).unwrap(),
-            authenticated_rest_url: Url::parse(AUTH_API_URL).unwrap(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(FUTURES_API_URL).unwrap(),
             auth: None,
         }
     }
@@ -73,25 +73,25 @@ impl Bitfinex {
     pub fn new_auth(api_key: &str, secret_key: &str) -> Self {
         Self {
             client: ReqClient::new(),
-            pub_rest_url: Url::parse(PUB_API_URL).unwrap(),
-            authenticated_rest_url: Url::parse(AUTH_API_URL).unwrap(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(FUTURES_API_URL).unwrap(),
             auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
         }
     }
 }
 
-impl Default for Bitfinex {
+impl Default for Kraken {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl AsyncBitfinex {
+impl AsyncKraken {
     pub fn new() -> Self {
         Self {
             client: ReqAsyncClient::new(),
-            pub_rest_url: Url::parse(PUB_API_URL).unwrap(),
-            authenticated_rest_url: Url::parse(AUTH_API_URL).unwrap(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(FUTURES_API_URL).unwrap(),
             auth: None,
         }
     }
@@ -99,20 +99,20 @@ impl AsyncBitfinex {
     pub fn new_auth(api_key: &str, secret_key: &str) -> Self {
         Self {
             client: ReqAsyncClient::new(),
-            pub_rest_url: Url::parse(PUB_API_URL).unwrap(),
-            authenticated_rest_url: Url::parse(AUTH_API_URL).unwrap(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(FUTURES_API_URL).unwrap(),
             auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
         }
     }
 }
 
-impl Default for AsyncBitfinex {
+impl Default for AsyncKraken {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RestClient for Bitfinex {
+impl RestClient for Kraken {
     type Error = RestError;
 
     fn rest_endpoint(
@@ -120,15 +120,13 @@ impl RestClient for Bitfinex {
         endpoint: &str,
         is_authenticated: bool,
     ) -> Result<Url, ApiError<Self::Error>> {
-        if is_authenticated {
-            Ok(self.authenticated_rest_url.join(endpoint)?)
-        } else {
-            Ok(self.pub_rest_url.join(endpoint)?)
-        }
+        // TODO: Switch rest endpoint depending if it is a future of spot call
+        // TODO: Handle is_authenticated 
+        Ok(self.spot_api_url.join(endpoint)?)
     }
 }
 
-impl RestClient for AsyncBitfinex {
+impl RestClient for AsyncKraken {
     type Error = RestError;
 
     fn rest_endpoint(
@@ -136,15 +134,13 @@ impl RestClient for AsyncBitfinex {
         endpoint: &str,
         is_authenticated: bool,
     ) -> Result<Url, ApiError<Self::Error>> {
-        if is_authenticated {
-            Ok(self.authenticated_rest_url.join(endpoint)?)
-        } else {
-            Ok(self.pub_rest_url.join(endpoint)?)
-        }
+        // TODO: Switch rest endpoint depending if it is a future of spot call
+        // TODO: Handle is_authenticated =
+        Ok(self.spot_api_url.join(endpoint)?)
     }
 }
 
-impl Client for Bitfinex {
+impl Client for Kraken {
     fn rest(
         &self,
         mut request_builder: RequestBuilder,
@@ -185,7 +181,7 @@ impl Client for Bitfinex {
 }
 
 #[async_trait]
-impl AsyncClient for AsyncBitfinex {
+impl AsyncClient for AsyncKraken {
     async fn rest_async(
         &self,
         mut request_builder: RequestBuilder,
