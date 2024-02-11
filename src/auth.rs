@@ -1,41 +1,52 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use base64::{prelude::BASE64_STANDARD, Engine};
 use hmac::Hmac;
 use http::{HeaderMap, HeaderValue};
+use serde_json::{Map, Value};
 use sha2::{Digest, Sha256, Sha512};
-use base64::{engine::general_purpose::URL_SAFE, Engine as _};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug)]
 pub struct Auth {
     api_key: String,
-    private_key: String,
+    private_key: Vec<u8>,
 }
 
 impl Auth {
     pub fn new(api_key: String, private_key: String) -> Self {
         Self {
             api_key,
-            private_key
+            private_key: BASE64_STANDARD.decode(private_key).unwrap(),
         }
     }
 
     /// Adds the appropriate headers to perform authenticated calls.
-    pub fn set_headers(&self, headers: &mut HeaderMap<HeaderValue>, path: &str, body: &[u8]) {
+    pub fn set_headers(
+        &self,
+        headers: &mut HeaderMap<HeaderValue>,
+        path: &str,
+        body: &mut Map<String, Value>,
+    ) {
         let nonce = self.generate_nonce();
 
-        // let signature_payload = format!("/0/{path}{nonce}{}", std::str::from_utf8(body).unwrap());
-        let nonce_body_hashed = Sha256::digest(nonce.to_string().as_bytes());
+        body.insert("nonce".to_string(), Value::Number(nonce.into()));
+        let encoded_body = serde_urlencoded::to_string(&body).unwrap();
 
-        let mut hmac_sha512 = <Hmac::<Sha512> as hmac::Mac>::new_from_slice(self.private_key.as_bytes()).unwrap();
+        let mut sha256 = Sha256::new();
+        Sha256::update(&mut sha256, nonce.to_string().as_bytes());
+        Sha256::update(&mut sha256, encoded_body.as_bytes());
+
+        let mut hmac_sha512 =
+            <Hmac<Sha512> as hmac::Mac>::new_from_slice(&self.private_key[..]).unwrap();
         hmac::digest::Update::update(&mut hmac_sha512, path.as_bytes());
-        hmac::digest::Update::update(&mut hmac_sha512, nonce_body_hashed.as_slice());
+        hmac::digest::Update::update(&mut hmac_sha512, &sha256.finalize());
 
-        let signature = URL_SAFE.encode(hmac::Mac::finalize(hmac_sha512).into_bytes());
-        
+        let signature: String =
+            BASE64_STANDARD.encode(hmac::Mac::finalize(hmac_sha512).into_bytes());
+
         let api_key_header_value = HeaderValue::from_str(&self.api_key).unwrap();
         let signature_header_value = HeaderValue::from_str(&signature).unwrap();
-
-        headers.insert("API-Sign", signature_header_value);
         headers.insert("API-Key", api_key_header_value);
+        headers.insert("API-Sign", signature_header_value);
     }
 
     // fn set_headers_spot(&self, headers: &mut HeaderMap<HeaderValue>, path: &str, body: &[u8]) {
@@ -46,7 +57,6 @@ impl Auth {
     //     // TODO: implement futures auth
     // }
 
-
     fn generate_nonce(&self) -> u64 {
         let start = SystemTime::now();
         let since_epoch = start.duration_since(UNIX_EPOCH).unwrap();
@@ -56,3 +66,33 @@ impl Auth {
         timestamp + 1
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use base64::{prelude::BASE64_STANDARD, Engine};
+//     use hmac::Hmac;
+//     use http::{HeaderMap, HeaderValue};
+//     use serde_json::{Map, Number, Value};
+//     use sha2::{Digest, Sha256, Sha512};
+//     use std::time::{SystemTime, UNIX_EPOCH};
+
+//     #[test]
+//     fn it_works() {
+//         let nonce: u64 = 1616492376594;
+
+//         let encoded_body =
+//             "nonce=1616492376594&ordertype=limit&pair=XBTUSD&price=37500&type=buy&volume=1.25";
+//         let mut sha256 = Sha256::new();
+//         Sha256::update(&mut sha256, nonce.to_string().as_bytes());
+//         Sha256::update(&mut sha256, encoded_body.as_bytes());
+
+//         let key = BASE64_STANDARD.decode("kQH5HW/8p1uGOVjbgWA7FunAmGO8lsSUXNsu3eow76sz84Q18fWxnyRzBHCd3pd5nE9qa99HAZtuZuj6F1huXg==").unwrap();
+//         let mut hmac_sha512 = <Hmac<Sha512> as hmac::Mac>::new_from_slice(&key).unwrap();
+//         hmac::digest::Update::update(&mut hmac_sha512, "/0/private/AddOrder".as_bytes());
+//         hmac::digest::Update::update(&mut hmac_sha512, &sha256.finalize());
+
+//         let signature: String =
+//             BASE64_STANDARD.encode(hmac::Mac::finalize(hmac_sha512).into_bytes());
+//         println!("signature {:?}", signature);
+//     }
+// }

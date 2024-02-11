@@ -3,12 +3,16 @@ use bytes::Bytes;
 use http::{request::Builder as RequestBuilder, Response};
 use reqwest::blocking::Client as ReqClient;
 use reqwest::Client as ReqAsyncClient;
+use serde_json::{Map, Value};
 use thiserror::Error;
 use url::Url;
 
 use crate::{
-    api::client::{AsyncClient, Client, RestClient},
-    api::error::ApiError,
+    api::{
+        client::{AsyncClient, Client, RestClient},
+        endpoint::EndpointType,
+        error::ApiError,
+    },
     auth::Auth,
 };
 
@@ -118,11 +122,12 @@ impl RestClient for Kraken {
     fn rest_endpoint(
         &self,
         endpoint: &str,
-        is_authenticated: bool,
+        endpoint_type: EndpointType,
     ) -> Result<Url, ApiError<Self::Error>> {
-        // TODO: Switch rest endpoint depending if it is a future of spot call
-        // TODO: Handle is_authenticated 
-        Ok(self.spot_api_url.join(endpoint)?)
+        match endpoint_type {
+            EndpointType::Spot => Ok(self.spot_api_url.join(endpoint)?),
+            EndpointType::Futures => Ok(self.futures_api_url.join(endpoint)?),
+        }
     }
 }
 
@@ -132,11 +137,12 @@ impl RestClient for AsyncKraken {
     fn rest_endpoint(
         &self,
         endpoint: &str,
-        is_authenticated: bool,
+        endpoint_type: EndpointType,
     ) -> Result<Url, ApiError<Self::Error>> {
-        // TODO: Switch rest endpoint depending if it is a future of spot call
-        // TODO: Handle is_authenticated =
-        Ok(self.spot_api_url.join(endpoint)?)
+        match endpoint_type {
+            EndpointType::Spot => Ok(self.spot_api_url.join(endpoint)?),
+            EndpointType::Futures => Ok(self.futures_api_url.join(endpoint)?),
+        }
     }
 }
 
@@ -144,17 +150,18 @@ impl Client for Kraken {
     fn rest(
         &self,
         mut request_builder: RequestBuilder,
-        body: Vec<u8>,
+        mut body: Map<String, Value>,
         path_to_sign: Option<String>,
     ) -> Result<Response<Bytes>, ApiError<Self::Error>> {
         let call = || {
             // If a path to sign has been provided, compute and adds the necessary authorization headers to the request.
             if let (Some(path_to_sign), Some(auth)) = (path_to_sign, &self.auth) {
-                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &body);
+                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &mut body);
             }
 
             // Build the request.
-            let http_request = request_builder.body(body)?;
+            let encoded_body = serde_urlencoded::to_string(&body).unwrap();
+            let http_request = request_builder.body(encoded_body)?;
 
             // Convert it to a reqwest::Request type and send it.
             let request = http_request.try_into()?;
@@ -185,20 +192,22 @@ impl AsyncClient for AsyncKraken {
     async fn rest_async(
         &self,
         mut request_builder: RequestBuilder,
-        body: Vec<u8>,
+        mut body: Map<String, Value>,
         path_to_sign: Option<String>,
     ) -> Result<Response<Bytes>, ApiError<<Self as RestClient>::Error>> {
         let call = || async {
             // If a path to sign has been provided, compute and adds the necessary authorization headers to the request.
             if let (Some(path_to_sign), Some(auth)) = (path_to_sign, &self.auth) {
-                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &body);
+                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &mut body);
             }
 
             // Build the request.
-            let http_request = request_builder.body(body)?;
+            let encoded_body = serde_urlencoded::to_string(&body).unwrap();
+            let http_request = request_builder.body(encoded_body)?;
 
             // Convert it to a reqwest::Request type and send it.
             let request = http_request.try_into()?;
+
             let rsp = self.client.execute(request).await?;
 
             // Build the HTTP response.

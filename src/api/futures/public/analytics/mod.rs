@@ -1,9 +1,8 @@
 use derive_builder::Builder;
 use http::Method;
-use serde::{de::Error, Deserialize};
-use serde_json::Value;
+use serde::Deserialize;
 
-use crate::api::{endpoint::{Endpoint, Response}, params::QueryParams, spot::ApiResponse};
+use crate::api::{endpoint::Endpoint, params::QueryParams};
 
 #[derive(Debug, Clone, Copy, Builder)]
 pub struct Time {}
@@ -35,10 +34,4 @@ pub type HistTimeResp = Vec<TimeResp>;
 pub struct TimeResp {
     pub unixtime: u64,
     pub rfc1123: String,
-}
-
-impl Response for TimeResp {
-    fn unwrap(v: Value) -> Self {
-        serde_json::from_value::<ApiResponse<Self>>(v.clone()).map(|res| res.result).unwrap()
-    }
 }

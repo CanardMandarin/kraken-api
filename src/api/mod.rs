@@ -7,3 +7,4 @@ pub mod params;
 pub mod query;
 
 pub mod spot;
+pub mod futures;
