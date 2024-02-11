@@ -122,7 +122,7 @@ impl RestClient for Kraken {
     fn rest_endpoint(
         &self,
         endpoint: &str,
-        endpoint_type: EndpointType,
+        endpoint_type: &EndpointType,
     ) -> Result<Url, ApiError<Self::Error>> {
         match endpoint_type {
             EndpointType::Spot => Ok(self.spot_api_url.join(endpoint)?),
@@ -137,7 +137,7 @@ impl RestClient for AsyncKraken {
     fn rest_endpoint(
         &self,
         endpoint: &str,
-        endpoint_type: EndpointType,
+        endpoint_type: &EndpointType,
     ) -> Result<Url, ApiError<Self::Error>> {
         match endpoint_type {
             EndpointType::Spot => Ok(self.spot_api_url.join(endpoint)?),
@@ -152,11 +152,17 @@ impl Client for Kraken {
         mut request_builder: RequestBuilder,
         mut body: Map<String, Value>,
         path_to_sign: Option<String>,
+        endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<Self::Error>> {
         let call = || {
             // If a path to sign has been provided, compute and adds the necessary authorization headers to the request.
             if let (Some(path_to_sign), Some(auth)) = (path_to_sign, &self.auth) {
-                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &mut body);
+                auth.set_headers(
+                    request_builder.headers_mut().unwrap(),
+                    &path_to_sign,
+                    &mut body,
+                    endpoint_type,
+                );
             }
 
             // Build the request.
@@ -194,11 +200,17 @@ impl AsyncClient for AsyncKraken {
         mut request_builder: RequestBuilder,
         mut body: Map<String, Value>,
         path_to_sign: Option<String>,
+        endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<<Self as RestClient>::Error>> {
         let call = || async {
             // If a path to sign has been provided, compute and adds the necessary authorization headers to the request.
             if let (Some(path_to_sign), Some(auth)) = (path_to_sign, &self.auth) {
-                auth.set_headers(request_builder.headers_mut().unwrap(), &path_to_sign, &mut body);
+                auth.set_headers(
+                    request_builder.headers_mut().unwrap(),
+                    &path_to_sign,
+                    &mut body,
+                    endpoint_type,
+                );
             }
 
             // Build the request.

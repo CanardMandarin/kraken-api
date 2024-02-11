@@ -5,6 +5,8 @@ use serde_json::{Map, Value};
 use sha2::{Digest, Sha256, Sha512};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use crate::api::endpoint::EndpointType;
+
 #[derive(Debug)]
 pub struct Auth {
     api_key: String,
@@ -21,6 +23,19 @@ impl Auth {
 
     /// Adds the appropriate headers to perform authenticated calls.
     pub fn set_headers(
+        &self,
+        headers: &mut HeaderMap<HeaderValue>,
+        path: &str,
+        body: &mut Map<String, Value>,
+        endpoint_type: &EndpointType,
+    ) {
+        match endpoint_type {
+            EndpointType::Spot => self.set_headers_spot(headers, path, body),
+            EndpointType::Futures => self.set_headers_futures(headers, path, body),
+        }
+    }
+
+    pub fn set_headers_spot(
         &self,
         headers: &mut HeaderMap<HeaderValue>,
         path: &str,
@@ -49,13 +64,35 @@ impl Auth {
         headers.insert("API-Sign", signature_header_value);
     }
 
-    // fn set_headers_spot(&self, headers: &mut HeaderMap<HeaderValue>, path: &str, body: &[u8]) {
+    fn set_headers_futures(
+        &self,
+        headers: &mut HeaderMap<HeaderValue>,
+        path: &str,
+        body: &mut Map<String, Value>,
+    ) {
+        let nonce = self.generate_nonce();
+        let encoded_body = serde_urlencoded::to_string(&body).unwrap();
 
-    // }
+        let mut sha256 = Sha256::new();
+        Sha256::update(&mut sha256, encoded_body.as_bytes());
+        Sha256::update(&mut sha256, nonce.to_string().as_bytes());
+        Sha256::update(&mut sha256, path.to_string().as_bytes());
 
-    // fn set_headers_futures(&self, headers: &mut HeaderMap<HeaderValue>, path: &str, body: &[u8]) {
-    //     // TODO: implement futures auth
-    // }
+        let mut hmac_sha512 =
+            <Hmac<Sha512> as hmac::Mac>::new_from_slice(&self.private_key[..]).unwrap();
+        hmac::digest::Update::update(&mut hmac_sha512, &sha256.finalize());
+
+        let signature: String =
+            BASE64_STANDARD.encode(hmac::Mac::finalize(hmac_sha512).into_bytes());
+
+        let api_key_header_value = HeaderValue::from_str(&self.api_key).unwrap();
+        let signature_header_value = HeaderValue::from_str(&signature).unwrap();
+        let nonce_header_value = HeaderValue::from_str(&nonce.to_string()).unwrap();
+
+        headers.insert("APIKey", api_key_header_value);
+        headers.insert("Authent", signature_header_value);
+        headers.insert("Nonce", nonce_header_value);
+    }
 
     fn generate_nonce(&self) -> u64 {
         let start = SystemTime::now();

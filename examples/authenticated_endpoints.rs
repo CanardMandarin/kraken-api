@@ -2,6 +2,7 @@ use kraken_api::{api::{query::AsyncQuery, spot::authenticated::account::{balance
 
 #[tokio::main]
 async fn main() {
+    let client = AsyncBitfinex::new_auth("YOUR_API_KEY", "YOUR_SECRET_KEY");
 
     let endpoint = Balance::builder().build().unwrap();
     let r: BalanceResp = endpoint.query_async(&client).await.unwrap();

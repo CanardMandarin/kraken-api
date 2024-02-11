@@ -1,7 +1,6 @@
 use kraken_api::{
     api::{
-        query::AsyncQuery,
-        spot::public::time::{Time, TimeResp},
+        futures::public::analytics::{Analytics, AnalyticsResp}, query::AsyncQuery, spot::public::time::{Time, TimeResp}
     },
     kraken::AsyncKraken,
 };
@@ -12,6 +11,10 @@ async fn main() {
 
     let endpoint = Time::builder().build().unwrap();
     let r: TimeResp = endpoint.query_async(&client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = Analytics::builder().interval(604800).since(1676556478).build().unwrap();
+    let r: AnalyticsResp = endpoint.query_async(&client).await.unwrap();
     println!("{r:#?}");
 
     // let endpoint = Ticker::builder().symbol("tBTCUSD").build().unwrap();

@@ -2,36 +2,59 @@ use derive_builder::Builder;
 use http::Method;
 use serde::Deserialize;
 
-use crate::api::{endpoint::Endpoint, params::QueryParams};
+use crate::api::{endpoint::{Endpoint, EndpointType}, params::QueryParams};
 
 #[derive(Debug, Clone, Copy, Builder)]
-pub struct Time {}
+#[builder(setter(strip_option))]
+pub struct Analytics {
+    #[builder(default)]
+    interval: u64,
+    #[builder(default)]
+    since: i64,
+    #[builder(default)]
+    to: Option<u64>,
+}
 
-impl Time {
-    pub fn builder() -> TimeBuilder {
-        TimeBuilder::default()
+impl Analytics {
+    pub fn builder() -> AnalyticsBuilder {
+        AnalyticsBuilder::default()
     }
 }
 
-impl Endpoint for Time {
+impl Endpoint for Analytics {
     fn method(&self) -> Method {
         Method::GET
     }
 
     fn endpoint(&self) -> String {
-        "/0/public/Time".to_owned()
+        "/api/charts/v1/analytics/liquidity-pool".to_owned()
     }
 
     fn parameters(&self) -> Option<QueryParams> {
-        None
+        let mut params = QueryParams::default();
+        params.push("interval", self.interval.to_string());
+        params.push("since", self.since.to_string());
+
+        if let Some(to) = self.to {
+            params.push("to", to.to_string());
+        }
+
+        Some(params)
+    }
+
+    fn endpoint_type(&self) -> EndpointType {
+        EndpointType::Futures
     }
 }
 
-pub type LastTimeResp = TimeResp;
-pub type HistTimeResp = Vec<TimeResp>;
+#[derive(Debug, Deserialize)]
+pub struct AnalyticsRespData {
+    #[serde(rename = "usdValue")]
+    pub usd_value: Vec<String>,
+}
 
 #[derive(Debug, Deserialize)]
-pub struct TimeResp {
-    pub unixtime: u64,
-    pub rfc1123: String,
+pub struct AnalyticsResp {
+    pub timestamp: Vec<i64>,
+    pub data: AnalyticsRespData,
 }

@@ -21,7 +21,7 @@ pub trait RestClient {
     fn rest_endpoint(
         &self,
         endpoint: &str,
-        endpoint_type: EndpointType,
+        endpoint_type: &EndpointType,
     ) -> Result<Url, ApiError<Self::Error>>;
 }
 
@@ -33,6 +33,7 @@ pub trait Client: RestClient {
         request_builder: RequestBuilder,
         body: serde_json::Map<String, Value>,
         path_to_sign: Option<String>,
+        endpoint_type: &EndpointType
     ) -> Result<Response<Bytes>, ApiError<Self::Error>>;
 }
 
@@ -45,5 +46,6 @@ pub trait AsyncClient: RestClient {
         mut request_builder: RequestBuilder,
         mut body: serde_json::Map<String, Value>,
         path_to_sign: Option<String>,
+        endpoint_type: &EndpointType
     ) -> Result<Response<Bytes>, ApiError<Self::Error>>;
 }

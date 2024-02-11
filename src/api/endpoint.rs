@@ -2,7 +2,7 @@ use std::any;
 
 use async_trait::async_trait;
 use http::{header, Method, Request};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::{Map, Value};
 
 use crate::api::{
@@ -48,24 +48,19 @@ pub trait Endpoint {
     }
 }
 
-/// A trait for providing the necessary information for a single REST API endpoint.
-pub trait Response {
-    /// The HTTP method to use for the endpoint.
-    fn unwrap(v: Value) -> Self;
-}
-
 impl<E, T, C> Query<T, C> for E
 where
     E: Endpoint,
-    T: Response,
+    T: DeserializeOwned,
     C: Client,
 {
     fn query(&self, client: &C) -> Result<T, ApiError<C::Error>> {
         let is_authenicated = self.is_authenticated();
         let endpoint = self.endpoint();
+        let endpoint_type = self.endpoint_type();
 
         // Build the URL.
-        let mut url = client.rest_endpoint(&endpoint, self.endpoint_type())?;
+        let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
         if let Some(parameters) = self.parameters() {
@@ -84,7 +79,12 @@ where
         };
 
         // Send off the request
-        let rsp = client.rest(request_builder, body, is_authenicated.then_some(endpoint))?;
+        let rsp = client.rest(
+            request_builder,
+            body,
+            is_authenicated.then_some(endpoint),
+            &endpoint_type,
+        )?;
 
         // Check the response status and extract errors if needed.
         let status = rsp.status();
@@ -103,13 +103,20 @@ where
             });
         }
 
-        // // Deserialize into whatever type the caller is asking.
-        // serde_json::from_value::<T>(v.clone()).map_err(|e| ApiError::DataType {
-        //     typename: any::type_name::<T>(),
-        //     obj: v,
-        //     source: e,
-        // })
-        Ok(T::unwrap(v))
+        #[derive(Debug, Deserialize)]
+        struct ApiResponse<T> {
+            // error: Vec<Value>,
+            result: T,
+        }
+
+        // Deserialize into whatever type the caller is asking.
+        serde_json::from_value::<ApiResponse<T>>(v.clone())
+            .map(|response| response.result)
+            .map_err(|e| ApiError::DataType {
+                typename: any::type_name::<T>(),
+                obj: v,
+                source: e,
+            })
     }
 }
 
@@ -117,15 +124,16 @@ where
 impl<E, T, C> AsyncQuery<T, C> for E
 where
     E: Endpoint + Sync,
-    T: Response + 'static,
+    T: DeserializeOwned + 'static,
     C: AsyncClient + Sync,
 {
     async fn query_async(&self, client: &C) -> Result<T, ApiError<C::Error>> {
         let is_authenicated = self.is_authenticated();
         let endpoint = self.endpoint();
+        let endpoint_type = self.endpoint_type();
 
         // Build the URL.
-        let mut url = client.rest_endpoint(&endpoint, self.endpoint_type())?;
+        let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
         if let Some(parameters) = self.parameters() {
@@ -145,7 +153,12 @@ where
 
         // Send off the request
         let rsp = client
-            .rest_async(request_builder, body, is_authenicated.then_some(endpoint))
+            .rest_async(
+                request_builder,
+                body,
+                is_authenicated.then_some(endpoint),
+                &endpoint_type,
+            )
             .await?;
 
         // Check the response status and extract errors if needed.
@@ -165,12 +178,19 @@ where
             });
         }
 
+        #[derive(Debug, Deserialize)]
+        struct ApiResponse<T> {
+            // error: Vec<Value>,
+            result: T,
+        }
+
         // Deserialize into whatever type the caller is asking.
-        // serde_json::from_value::<T>(v.clone()).map_err(|e| ApiError::DataType {
-        //     typename: any::type_name::<T>(),
-        //     obj: v,
-        //     source: e,
-        // })
-        Ok(T::unwrap(v))
+        serde_json::from_value::<ApiResponse<T>>(v.clone())
+            .map(|response| response.result)
+            .map_err(|e| ApiError::DataType {
+                typename: any::type_name::<T>(),
+                obj: v,
+                source: e,
+            })
     }
 }

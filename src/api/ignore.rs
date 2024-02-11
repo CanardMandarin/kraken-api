@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use http::{header, Request};
-use serde_json::{Map, Value};
+use serde_json::Map;
 
 use super::{
     client::{AsyncClient, Client},
@@ -27,9 +27,10 @@ where
     fn query(&self, client: &C) -> Result<(), ApiError<C::Error>> {
         let is_authenicated = self.endpoint.is_authenticated();
         let endpoint = self.endpoint.endpoint();
+        let endpoint_type = self.endpoint.endpoint_type();
 
         // Build the URL.
-        let mut url = client.rest_endpoint(&endpoint, self.endpoint.endpoint_type())?;
+        let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
         if let Some(parameters) = self.endpoint.parameters() {
@@ -41,14 +42,14 @@ where
             .uri(url_to_http_uri(url));
 
         // Add the body to the request if any.
-        let (request_builder, mut body) = if let Some((mime, data)) = self.endpoint.body() {
+        let (request_builder, body) = if let Some((mime, data)) = self.endpoint.body() {
             (request_builder.header(header::CONTENT_TYPE, mime), data)
         } else {
             (request_builder, Map::new())
         };
 
         // Send off the request
-        let rsp = client.rest(request_builder, body, is_authenicated.then_some(endpoint))?;
+        let rsp = client.rest(request_builder, body, is_authenicated.then_some(endpoint), &endpoint_type)?;
 
         // Check the response status and extract errors if needed.
         let status = rsp.status();
@@ -82,9 +83,10 @@ where
     async fn query_async(&self, client: &C) -> Result<(), ApiError<C::Error>> {
         let is_authenicated = self.endpoint.is_authenticated();
         let endpoint = self.endpoint.endpoint();
+        let endpoint_type = self.endpoint.endpoint_type();
 
         // Build the URL.
-        let mut url = client.rest_endpoint(&endpoint, self.endpoint.endpoint_type())?;
+        let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
         if let Some(parameters) = self.endpoint.parameters() {
@@ -96,7 +98,7 @@ where
             .uri(url_to_http_uri(url));
 
         // Add the body to the request if any.
-        let (request_builder, mut body) = if let Some((mime, data)) = self.endpoint.body() {
+        let (request_builder, body) = if let Some((mime, data)) = self.endpoint.body() {
             (request_builder.header(header::CONTENT_TYPE, mime), data)
         } else {
             (request_builder, Map::new())
@@ -104,7 +106,7 @@ where
 
         // Send off the request
         let rsp = client
-            .rest_async(request_builder, body, is_authenicated.then_some(endpoint))
+            .rest_async(request_builder, body, is_authenicated.then_some(endpoint), &endpoint_type)
             .await?;
 
         // Check the response status and extract errors if needed.
