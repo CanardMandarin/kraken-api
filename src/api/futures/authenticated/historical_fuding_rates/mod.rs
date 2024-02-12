@@ -8,6 +8,7 @@ use crate::api::{
 };
 
 #[derive(Debug, Clone, Builder)]
+#[builder(setter(into))]
 pub struct HistoricalFundingRates {
     pub symbol: String,
 }

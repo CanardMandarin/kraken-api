@@ -49,7 +49,7 @@ pub struct OpenPosition {
     #[serde(default, rename = "unrealizedFunding")]
     pub unrealized_funding: Option<f64>,
     #[serde(default, rename = "maxFixedLeverage")]
-    pub max_fixed_leverage: Option<i32>,
+    pub max_fixed_leverage: Option<f64>,
     #[serde(default, rename = "pnlCurrency")]
     pub pnl_currency: Option<String>,
 }

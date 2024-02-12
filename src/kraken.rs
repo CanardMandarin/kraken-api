@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use bytes::Bytes;
-use http::{request::Builder as RequestBuilder, Response};
+use http::{header, request::Builder as RequestBuilder, Response};
 use reqwest::blocking::Client as ReqClient;
 use reqwest::Client as ReqAsyncClient;
 use serde_json::{Map, Value};
@@ -166,7 +166,21 @@ impl Client for Kraken {
             }
 
             // Build the request.
-            let encoded_body = serde_urlencoded::to_string(&body).unwrap();
+            let encoded_body = if let Some(Some(content_type)) = request_builder
+                .headers_ref()
+                .map(|h| h.get(header::CONTENT_TYPE))
+            {
+                match content_type.to_str().unwrap() {
+                    "application/x-www-form-urlencoded" => {
+                        serde_urlencoded::to_string(&body).unwrap()
+                    }
+                    "application/json" => serde_json::to_string(&body).unwrap(),
+                    _ => "".to_owned(),
+                }
+            } else {
+                "".to_owned()
+            };
+
             let http_request = request_builder.body(encoded_body)?;
 
             // Convert it to a reqwest::Request type and send it.
@@ -214,7 +228,23 @@ impl AsyncClient for AsyncKraken {
             }
 
             // Build the request.
-            let encoded_body = serde_urlencoded::to_string(&body).unwrap();
+            let encoded_body = if let Some(Some(content_type)) = request_builder
+                .headers_ref()
+                .map(|h| h.get(header::CONTENT_TYPE))
+            {
+                match content_type.to_str().unwrap() {
+                    "application/x-www-form-urlencoded" => {
+                        serde_urlencoded::to_string(&body).unwrap()
+                    }
+                    "application/json" => serde_json::to_string(&body).unwrap(),
+                    _ => "".to_owned(),
+                }
+            } else {
+                "".to_owned()
+            };
+
+            println!("{:?}", encoded_body);
+
             let http_request = request_builder.body(encoded_body)?;
 
             // Convert it to a reqwest::Request type and send it.
