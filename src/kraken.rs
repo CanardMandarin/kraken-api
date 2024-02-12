@@ -219,7 +219,6 @@ impl AsyncClient for AsyncKraken {
 
             // Convert it to a reqwest::Request type and send it.
             let request = http_request.try_into()?;
-
             let rsp = self.client.execute(request).await?;
 
             // Build the HTTP response.

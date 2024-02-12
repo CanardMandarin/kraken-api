@@ -2,7 +2,7 @@ use std::any;
 
 use async_trait::async_trait;
 use http::{header, Method, Request};
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
 
 use crate::api::{
@@ -103,15 +103,9 @@ where
             });
         }
 
-        #[derive(Debug, Deserialize)]
-        struct ApiResponse<T> {
-            // error: Vec<Value>,
-            result: T,
-        }
-
         // Deserialize into whatever type the caller is asking.
-        serde_json::from_value::<ApiResponse<T>>(v.clone())
-            .map(|response| response.result)
+        serde_json::from_value::<T>(v.clone())
+            .map(|response| response)
             .map_err(|e| ApiError::DataType {
                 typename: any::type_name::<T>(),
                 obj: v,
@@ -178,15 +172,9 @@ where
             });
         }
 
-        #[derive(Debug, Deserialize)]
-        struct ApiResponse<T> {
-            // error: Vec<Value>,
-            result: T,
-        }
-
         // Deserialize into whatever type the caller is asking.
-        serde_json::from_value::<ApiResponse<T>>(v.clone())
-            .map(|response| response.result)
+        serde_json::from_value::<T>(v.clone())
+            .map(|response| response)
             .map_err(|e| ApiError::DataType {
                 typename: any::type_name::<T>(),
                 obj: v,

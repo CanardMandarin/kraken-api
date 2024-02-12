@@ -30,4 +30,6 @@ impl Endpoint for Balance {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct BalanceResp(HashMap<String, String>);
+pub struct BalanceResp {
+    pub result: HashMap<String, String>,
+}

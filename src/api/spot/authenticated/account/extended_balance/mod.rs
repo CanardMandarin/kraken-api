@@ -36,6 +36,7 @@ pub struct ExtendedBalanceAsset {
     pub credit_used: Option<String>,
     pub hold_trade: Option<String>,
 }
-
 #[derive(Debug, Deserialize)]
-pub struct ExtendedBalanceResp(HashMap<String, ExtendedBalanceAsset>);
+pub struct ExtendedBalanceResp {
+    pub result: HashMap<String, ExtendedBalanceAsset>,
+}

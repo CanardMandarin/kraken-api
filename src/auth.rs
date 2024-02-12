@@ -73,10 +73,19 @@ impl Auth {
         let nonce = self.generate_nonce();
         let encoded_body = serde_urlencoded::to_string(&body).unwrap();
 
+        let real_path = if path.starts_with("/derivatives") {
+            &path[12..]
+        } else {
+            &path[..]
+        };
+
         let mut sha256 = Sha256::new();
-        Sha256::update(&mut sha256, encoded_body.as_bytes());
+        if !body.is_empty() {
+            Sha256::update(&mut sha256, encoded_body.as_bytes());
+        }
+
         Sha256::update(&mut sha256, nonce.to_string().as_bytes());
-        Sha256::update(&mut sha256, path.to_string().as_bytes());
+        Sha256::update(&mut sha256, real_path.to_string().as_bytes());
 
         let mut hmac_sha512 =
             <Hmac<Sha512> as hmac::Mac>::new_from_slice(&self.private_key[..]).unwrap();

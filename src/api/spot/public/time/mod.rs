@@ -26,7 +26,12 @@ pub type LastTimeResp = TimeResp;
 pub type HistTimeResp = Vec<TimeResp>;
 
 #[derive(Debug, Deserialize)]
-pub struct TimeResp {
+pub struct TimeRespWrapped {
     pub unixtime: u64,
     pub rfc1123: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TimeResp {
+    pub result: TimeRespWrapped,
 }

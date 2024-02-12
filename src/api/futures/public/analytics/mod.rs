@@ -2,14 +2,15 @@ use derive_builder::Builder;
 use http::Method;
 use serde::Deserialize;
 
-use crate::api::{endpoint::{Endpoint, EndpointType}, params::QueryParams};
+use crate::api::{
+    endpoint::{Endpoint, EndpointType},
+    params::QueryParams,
+};
 
 #[derive(Debug, Clone, Copy, Builder)]
 #[builder(setter(strip_option))]
 pub struct Analytics {
-    #[builder(default)]
     interval: u64,
-    #[builder(default)]
     since: i64,
     #[builder(default)]
     to: Option<u64>,
@@ -54,7 +55,12 @@ pub struct AnalyticsRespData {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct AnalyticsResp {
+pub struct AnalyticsRespWrapped {
     pub timestamp: Vec<i64>,
     pub data: AnalyticsRespData,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AnalyticsResp {
+    pub result: AnalyticsRespWrapped,
 }

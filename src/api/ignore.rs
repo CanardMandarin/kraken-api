@@ -49,7 +49,12 @@ where
         };
 
         // Send off the request
-        let rsp = client.rest(request_builder, body, is_authenicated.then_some(endpoint), &endpoint_type)?;
+        let rsp = client.rest(
+            request_builder,
+            body,
+            is_authenicated.then_some(endpoint),
+            &endpoint_type,
+        )?;
 
         // Check the response status and extract errors if needed.
         let status = rsp.status();
@@ -106,7 +111,12 @@ where
 
         // Send off the request
         let rsp = client
-            .rest_async(request_builder, body, is_authenicated.then_some(endpoint), &endpoint_type)
+            .rest_async(
+                request_builder,
+                body,
+                is_authenicated.then_some(endpoint),
+                &endpoint_type,
+            )
             .await?;
 
         // Check the response status and extract errors if needed.
