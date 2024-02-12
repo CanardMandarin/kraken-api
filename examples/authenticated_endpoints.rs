@@ -5,13 +5,13 @@ use kraken_api::{
             historical_fuding_rates::{HistoricalFundingRates, HistoricalFundingRatesResp},
             instruments::{Instruments, InstrumentsResp},
             open_positions::{OpenPositions, OpenPositionsResp},
-            orderbook::{OrderBook, OrderBookResp},
+            orderbook::{OrderBook, OrderBookResp}, withdrawal::{Withdrawal, WithdrawalResp},
         },
         query::AsyncQuery,
-        spot::authenticated::account::{
+        spot::authenticated::{account::{
             balance::{Balance, BalanceResp},
             extended_balance::{ExtendedBalance, ExtendedBalanceResp},
-        },
+        }, wallet_transfer::{WalletTransfer, WalletTransferResp}},
     },
     kraken::AsyncKraken,
 };
@@ -53,5 +53,18 @@ async fn main() {
 
     let endpoint = Instruments::builder().build().unwrap();
     let r: InstrumentsResp = endpoint.query_async(&futures_client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = Withdrawal::builder()
+        .amount(1.0)
+        .currency("doge")
+        .source_wallet("flex")
+        .build()
+        .unwrap();
+    let r: WithdrawalResp = endpoint.query_async(&futures_client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = WalletTransfer::builder().amount(1.0).asset("doge").build().unwrap();
+    let r: WalletTransferResp = endpoint.query_async(&spot_client).await.unwrap();
     println!("{r:#?}");
 }
