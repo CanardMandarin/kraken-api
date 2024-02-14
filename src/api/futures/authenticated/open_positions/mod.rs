@@ -38,7 +38,6 @@ pub enum Side {
     #[serde(rename = "short")]
     Short,
 }
-
 #[derive(Debug, Deserialize)]
 pub struct OpenPosition {
     #[serde(rename = "fillTime")]
@@ -46,6 +45,7 @@ pub struct OpenPosition {
     pub price: f64,
     pub side: Side,
     pub size: f64,
+    pub symbol: String,
     #[serde(default, rename = "unrealizedFunding")]
     pub unrealized_funding: Option<f64>,
     #[serde(default, rename = "maxFixedLeverage")]
