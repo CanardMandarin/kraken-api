@@ -45,7 +45,7 @@ pub struct OpenPosition {
     pub fill_time: String,
     pub price: f64,
     pub side: Side,
-    pub symbol: String,
+    pub size: f64,
     #[serde(default, rename = "unrealizedFunding")]
     pub unrealized_funding: Option<f64>,
     #[serde(default, rename = "maxFixedLeverage")]
