@@ -243,8 +243,6 @@ impl AsyncClient for AsyncKraken {
                 "".to_owned()
             };
 
-            println!("{:?}", encoded_body);
-
             let http_request = request_builder.body(encoded_body)?;
 
             // Convert it to a reqwest::Request type and send it.

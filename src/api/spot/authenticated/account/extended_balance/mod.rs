@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use derive_builder::Builder;
 use http::Method;
 use serde::Deserialize;
+use serde_json::{Map, Value};
 
 use crate::api::endpoint::Endpoint;
 
@@ -26,6 +27,10 @@ impl Endpoint for ExtendedBalance {
 
     fn is_authenticated(&self) -> bool {
         true
+    }
+
+    fn body(&self) -> Option<(&'static str, Map<String, Value>)> {
+        Some(("application/x-www-form-urlencoded", Map::new()))
     }
 }
 
