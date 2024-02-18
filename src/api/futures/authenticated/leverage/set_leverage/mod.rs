@@ -5,28 +5,26 @@ use serde_json::{Map, Value};
 
 use crate::api::endpoint::{Endpoint, EndpointType};
 
-#[derive(Debug, Clone, Builder, Default, Serialize)]
-#[builder(setter(strip_option, into), default)]
-pub struct Withdrawal {
-    pub amount: String,
-    pub currency: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub source_wallet: Option<String>,
+#[derive(Debug, Clone, Builder, Serialize)]
+#[builder(setter(into))]
+#[serde(rename_all = "camelCase")]
+pub struct SetLeveragePreferences {
+    pub max_leverage: f64,
+    pub symbol: String,
 }
-
-impl Withdrawal {
-    pub fn builder() -> WithdrawalBuilder {
-        WithdrawalBuilder::default()
+impl SetLeveragePreferences {
+    pub fn builder() -> SetLeveragePreferencesBuilder {
+        SetLeveragePreferencesBuilder::default()
     }
 }
 
-impl Endpoint for Withdrawal {
+impl Endpoint for SetLeveragePreferences {
     fn method(&self) -> Method {
-        Method::POST
+        Method::PUT
     }
 
     fn endpoint(&self) -> String {
-        String::from("/derivatives/api/v3/withdrawal")
+        String::from("/derivatives/api/v3/leveragepreferences")
     }
 
     fn is_authenticated(&self) -> bool {
@@ -52,7 +50,7 @@ impl Endpoint for Withdrawal {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct WithdrawalResp {
+pub struct SetLeveragePreferencesResp {
     pub result: String,
     pub server_time: String,
 }

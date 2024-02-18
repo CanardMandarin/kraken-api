@@ -32,7 +32,8 @@ pub enum RestError {
 }
 
 const SPOT_API_URL: &str = "https://api.kraken.com";
-const FUTURES_API_URL: &str = "https://futures.kraken.com";
+// const FUTURES_API_URL: &str = "https://futures.kraken.com";
+const FUTURES_API_URL: &str = "https://demo-futures.kraken.com/";
 
 #[derive(Debug)]
 pub struct Kraken {

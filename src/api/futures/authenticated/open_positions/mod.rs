@@ -39,26 +39,24 @@ pub enum Side {
     Short,
 }
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+
 pub struct OpenPosition {
-    #[serde(rename = "fillTime")]
     pub fill_time: String,
     pub price: f64,
     pub side: Side,
     pub size: f64,
     pub symbol: String,
-    #[serde(default, rename = "unrealizedFunding")]
     pub unrealized_funding: Option<f64>,
-    #[serde(default, rename = "maxFixedLeverage")]
     pub max_fixed_leverage: Option<f64>,
-    #[serde(default, rename = "pnlCurrency")]
     pub pnl_currency: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+
 pub struct OpenPositionsResp {
     pub result: String,
-    #[serde(rename = "openPositions")]
     pub open_positions: Vec<OpenPosition>,
-    #[serde(rename = "serverTime")]
     pub server_time: String,
 }

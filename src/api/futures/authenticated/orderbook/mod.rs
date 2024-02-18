@@ -57,7 +57,7 @@ pub struct OrderBookWrapper {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OrderBookResp {
-    #[serde(rename = "orderBook")]
     pub order_book: OrderBookWrapper,
 }

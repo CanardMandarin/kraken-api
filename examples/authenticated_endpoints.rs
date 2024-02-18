@@ -56,7 +56,7 @@ async fn main() {
     println!("{r:#?}");
 
     let endpoint = Withdrawal::builder()
-        .amount(1.0)
+        .amount("1.0")
         .currency("doge")
         .source_wallet("flex")
         .build()

@@ -49,12 +49,13 @@ impl Endpoint for Analytics {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnalyticsRespData {
-    #[serde(rename = "usdValue")]
     pub usd_value: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnalyticsRespWrapped {
     pub timestamp: Vec<i64>,
     pub data: AnalyticsRespData,

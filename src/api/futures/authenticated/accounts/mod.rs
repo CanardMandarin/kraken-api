@@ -61,13 +61,12 @@ pub struct MarginAccountRequirements {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MarginAccount {
     pub auxiliary: MarginAccountAuxiliary,
     pub balances: HashMap<String, f64>,
     pub currency: String,
-    #[serde(rename = "marginRequirements")]
     pub margin_requirements: MarginAccountRequirements,
-    #[serde(rename = "triggerEstimates")]
     pub trigger_estimates: MarginAccountRequirements,
     pub r#type: String,
 }
@@ -81,28 +80,19 @@ pub struct MultiCollateralMarginAccountCurrency {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MultiCollateralMarginAccount {
-    #[serde(rename = "availableMargin")]
     pub available_margin: f64,
-    #[serde(rename = "balanceValue")]
     pub balance_value: f64,
-    #[serde(rename = "collateralValue")]
     pub collateral_value: f64,
     pub currencies: HashMap<String, MultiCollateralMarginAccountCurrency>,
-    #[serde(rename = "initialMargin")]
     pub initial_margin: f64,
-    #[serde(rename = "initialMarginWithOrders")]
     pub initial_margin_with_orders: f64,
-    #[serde(rename = "maintenanceMargin")]
     pub maintenance_margin: f64,
-    #[serde(rename = "marginEquity")]
     pub margin_equity: f64,
     pub pnl: f64,
-    #[serde(rename = "portfolioValue")]
     pub portfolio_value: f64,
-    #[serde(rename = "totalUnrealized")]
     pub total_unrealized: f64,
-    #[serde(rename = "unrealizedFunding")]
     pub unrealized_funding: f64,
 }
 
@@ -114,10 +104,10 @@ pub enum FuturesAccount {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AccountsResp {
     pub result: String,
     pub accounts: HashMap<String, FuturesAccount>,
-    #[serde(rename = "serverTime")]
     pub server_time: String,
 }
 

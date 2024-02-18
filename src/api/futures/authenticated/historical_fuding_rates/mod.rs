@@ -53,18 +53,18 @@ pub enum Side {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+
 pub struct FundingRate {
-    #[serde(rename = "fundingRate")]
     pub funding_rate: f64,
-    #[serde(rename = "relativeFundingRate")]
     pub relative_funding_rate: f64,
     pub timestamp: String,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct HistoricalFundingRatesResp {
     pub result: String,
     pub rates: Vec<FundingRate>,
-    #[serde(rename = "serverTime")]
     pub server_time: String,
 }

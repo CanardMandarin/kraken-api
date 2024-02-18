@@ -32,70 +32,47 @@ impl Endpoint for Instruments {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MarginLevel {
     pub contracts: Option<f64>,
-    #[serde(rename = "initialMargin")]
     pub initial_margin: f64,
-    #[serde(rename = "maintenanceMargin")]
     pub maintenance_margin: f64,
-    #[serde(default, rename = "numNonContractUnits")]
+    #[serde(default)]
     pub num_non_contract_units: f64,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Instrument {
     pub symbol: String,
     pub category: Option<String>,
-
-    #[serde(rename = "contractSize")]
     pub contract_size: Option<f64>,
-    #[serde(rename = "contractValueTradePrecision")]
     pub contract_value_trade_precision: Option<f64>,
-    #[serde(rename = "feeScheduleUid")]
     pub fee_schedule_uid: Option<String>,
-
-    #[serde(rename = "fundingRateCoefficient")]
     pub funding_rate_coefficient: Option<f64>,
-
-    #[serde(rename = "impactMidSize")]
     pub impact_mid_size: Option<f64>,
-
     pub isin: Option<String>,
-
-    #[serde(rename = "lastTradingTime")]
     pub last_trading_time: Option<String>,
-
-    #[serde(default, rename = "marginLevels")]
+    #[serde(default)]
     pub margin_levels: Vec<MarginLevel>,
-
-    #[serde(rename = "maxPositionSize")]
     pub max_position_size: Option<f64>,
-
-    #[serde(rename = "maxRelativeFundingRate")]
     pub max_relative_funding_rate: Option<f64>,
-
-    #[serde(rename = "openingDate")]
     pub opening_date: Option<String>,
-
-    #[serde(rename = "postOnly")]
     pub post_only: Option<bool>,
-
-    #[serde(default, rename = "retailMarginLevels")]
+    #[serde(default)]
     pub retail_margin_levels: Vec<MarginLevel>,
     #[serde(default)]
     pub tags: Vec<String>,
-    #[serde(rename = "tickSize")]
     pub tick_size: Option<f64>,
     pub tradeable: bool,
-    #[serde(rename = "type")]
-    pub instrument_type: String,
+    pub r#type: String,
     pub underlying: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InstrumentsResp {
     pub result: String,
     pub instruments: Vec<Instrument>,
-    #[serde(rename = "serverTime")]
     pub server_time: String,
 }
