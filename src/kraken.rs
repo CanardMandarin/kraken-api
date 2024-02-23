@@ -32,8 +32,8 @@ pub enum RestError {
 }
 
 const SPOT_API_URL: &str = "https://api.kraken.com";
-// const FUTURES_API_URL: &str = "https://futures.kraken.com";
-const FUTURES_API_URL: &str = "https://demo-futures.kraken.com/";
+const FUTURES_API_URL: &str = "https://futures.kraken.com";
+const TEST_FUTURES_API_URL: &str = "https://demo-futures.kraken.com/";
 
 #[derive(Debug)]
 pub struct Kraken {
@@ -80,6 +80,15 @@ impl Kraken {
             client: ReqClient::new(),
             spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
             futures_api_url: Url::parse(FUTURES_API_URL).unwrap(),
+            auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
+        }
+    }
+
+    pub fn new_auth_with_test(api_key: &str, secret_key: &str) -> Self {
+        Self {
+            client: ReqClient::new(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(TEST_FUTURES_API_URL).unwrap(),
             auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
         }
     }
