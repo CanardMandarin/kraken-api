@@ -118,6 +118,15 @@ impl AsyncKraken {
             auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
         }
     }
+
+    pub fn new_auth_with_test(api_key: &str, secret_key: &str) -> Self {
+        Self {
+            client: ReqAsyncClient::new(),
+            spot_api_url: Url::parse(SPOT_API_URL).unwrap(),
+            futures_api_url: Url::parse(TEST_FUTURES_API_URL).unwrap(),
+            auth: Some(Auth::new(api_key.to_string(), secret_key.to_string())),
+        }
+    }
 }
 
 impl Default for AsyncKraken {
