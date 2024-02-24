@@ -5,13 +5,18 @@ use kraken_api::{
             historical_fuding_rates::{HistoricalFundingRates, HistoricalFundingRatesResp},
             instruments::{Instruments, InstrumentsResp},
             open_positions::{OpenPositions, OpenPositionsResp},
-            orderbook::{OrderBook, OrderBookResp}, withdrawal::{Withdrawal, WithdrawalResp},
+            orderbook::{OrderBook, OrderBookResp},
+            send_order::{OrderSide, OrderType, SendOrder, SendOrderResp},
+            withdrawal::{Withdrawal, WithdrawalResp},
         },
         query::AsyncQuery,
-        spot::authenticated::{account::{
-            balance::{Balance, BalanceResp},
-            extended_balance::{ExtendedBalance, ExtendedBalanceResp},
-        }, wallet_transfer::{WalletTransfer, WalletTransferResp}},
+        spot::authenticated::{
+            account::{
+                balance::{Balance, BalanceResp},
+                extended_balance::{ExtendedBalance, ExtendedBalanceResp},
+            },
+            wallet_transfer::{WalletTransfer, WalletTransferResp},
+        },
     },
     kraken::AsyncKraken,
 };
@@ -64,7 +69,32 @@ async fn main() {
     let r: WithdrawalResp = endpoint.query_async(&futures_client).await.unwrap();
     println!("{r:#?}");
 
-    let endpoint = WalletTransfer::builder().amount(1.0).asset("doge").build().unwrap();
+    let endpoint = WalletTransfer::builder()
+        .amount(1.0)
+        .asset("doge")
+        .build()
+        .unwrap();
     let r: WalletTransferResp = endpoint.query_async(&spot_client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = SendOrder::builder()
+        .symbol("PF_XBTUSD")
+        .order_type(OrderType::Market)
+        .size(0.004)
+        .side(OrderSide::Sell)
+        .build()
+        .unwrap();
+    let r: SendOrderResp = endpoint.query_async(&futures_client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = SendOrder::builder()
+        .symbol("PF_XBTUSD")
+        .order_type(OrderType::Market)
+        .size(0.008)
+        .reduce_only(true)
+        .side(OrderSide::Buy)
+        .build()
+        .unwrap();
+    let r: SendOrderResp = endpoint.query_async(&futures_client).await.unwrap();
     println!("{r:#?}");
 }

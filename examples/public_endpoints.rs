@@ -2,7 +2,11 @@ use kraken_api::{
     api::{
         futures::public::analytics::{Analytics, AnalyticsResp},
         query::AsyncQuery,
-        spot::public::{orderbook::{OrderBook, OrderBookResp}, time::{Time, TimeResp}},
+        spot::public::{
+            orderbook::{OrderBook, OrderBookResp},
+            ticker::{Ticker, TickerResp},
+            time::{Time, TimeResp},
+        },
     },
     kraken::AsyncKraken,
 };
@@ -25,5 +29,9 @@ async fn main() {
 
     let endpoint = OrderBook::builder().pair("XXBTZUSD").build().unwrap();
     let r: OrderBookResp = endpoint.query_async(&client).await.unwrap();
+    println!("{r:#?}");
+
+    let endpoint = Ticker::builder().pair("XBTUSD").build().unwrap();
+    let r: TickerResp = endpoint.query_async(&client).await.unwrap();
     println!("{r:#?}");
 }
