@@ -317,7 +317,7 @@ pub enum RejectReason {
     OrderForEditNotFound,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OrderEvent {
     PlaceEvent(PlaceEvent),
     CancelEvent(CancelEvent),

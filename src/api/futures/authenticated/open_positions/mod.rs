@@ -31,7 +31,7 @@ impl Endpoint for OpenPositions {
     }
 }
 
-#[derive(Debug, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Deserialize, PartialEq, Eq, Clone)]
 pub enum Side {
     #[serde(rename = "long")]
     Long,
