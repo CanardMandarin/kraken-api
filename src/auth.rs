@@ -107,7 +107,7 @@ impl Auth {
         let start = SystemTime::now();
         let since_epoch = start.duration_since(UNIX_EPOCH).unwrap();
         let timestamp =
-            since_epoch.as_secs() * 1000 + since_epoch.subsec_nanos() as u64 / 1_000_000;
+            since_epoch.as_secs() * 1000 + since_epoch.subsec_nanos() as u64 / 1_000;
 
         timestamp + 1
     }
