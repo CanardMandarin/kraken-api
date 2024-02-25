@@ -34,14 +34,14 @@ impl Endpoint for ExtendedBalance {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ExtendedBalanceAsset {
     pub balance: String,
     pub credit: Option<String>,
     pub credit_used: Option<String>,
     pub hold_trade: Option<String>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ExtendedBalanceResp {
     pub result: HashMap<String, ExtendedBalanceAsset>,
 }

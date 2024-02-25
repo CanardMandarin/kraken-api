@@ -37,7 +37,7 @@ impl Endpoint for Ticker {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct AssetTicker {
     #[serde(rename = "a")]
     pub ask: Vec<String>, // Ask [<price>, <whole lot volume>, <lot volume>]
@@ -59,7 +59,7 @@ pub struct AssetTicker {
     pub opening_price: String, // Today's opening price
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TickerResp {
     pub result: HashMap<String, AssetTicker>,
 }

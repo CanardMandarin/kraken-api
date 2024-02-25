@@ -38,7 +38,7 @@ pub enum Side {
     #[serde(rename = "short")]
     Short,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 
 pub struct OpenPosition {
@@ -52,7 +52,7 @@ pub struct OpenPosition {
     pub pnl_currency: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 
 pub struct OpenPositionsResp {

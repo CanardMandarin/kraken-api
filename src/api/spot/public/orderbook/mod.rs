@@ -37,20 +37,20 @@ impl Endpoint for OrderBook {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Order {
     pub price: String,
     pub volume: String,
     pub timestamp: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct OrderBookW {
     pub asks: Vec<Order>,
     pub bids: Vec<Order>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct OrderBookResp {
     pub result: HashMap<String, OrderBookW>,
 }

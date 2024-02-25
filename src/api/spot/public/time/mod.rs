@@ -25,13 +25,13 @@ impl Endpoint for Time {
 pub type LastTimeResp = TimeResp;
 pub type HistTimeResp = Vec<TimeResp>;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TimeRespWrapped {
     pub unixtime: u64,
     pub rfc1123: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TimeResp {
     pub result: TimeRespWrapped,
 }

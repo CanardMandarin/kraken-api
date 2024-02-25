@@ -46,12 +46,12 @@ impl Endpoint for WalletTransfer {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct WalletTransferRef {
     pub refid: String
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct WalletTransferResp {
     pub result: WalletTransferRef,
 }

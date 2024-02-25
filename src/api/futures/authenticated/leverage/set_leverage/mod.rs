@@ -48,7 +48,7 @@ impl Endpoint for SetLeveragePreferences {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SetLeveragePreferencesResp {
     pub result: String,

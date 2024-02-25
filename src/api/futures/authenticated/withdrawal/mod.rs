@@ -50,7 +50,7 @@ impl Endpoint for Withdrawal {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct WithdrawalResp {
     pub result: String,

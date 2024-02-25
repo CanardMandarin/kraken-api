@@ -31,7 +31,7 @@ impl Endpoint for Instruments {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MarginLevel {
     pub contracts: Option<f64>,
@@ -41,7 +41,7 @@ pub struct MarginLevel {
     pub num_non_contract_units: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Instrument {
     pub symbol: String,
@@ -69,7 +69,7 @@ pub struct Instrument {
     pub underlying: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct InstrumentsResp {
     pub result: String,

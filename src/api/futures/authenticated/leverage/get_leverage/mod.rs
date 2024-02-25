@@ -31,7 +31,7 @@ impl Endpoint for GetLeveragePreferences {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 
 pub struct LeveragePreferences {
@@ -39,7 +39,7 @@ pub struct LeveragePreferences {
     pub symbol: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLeveragePreferencesResp {
     pub result: String,

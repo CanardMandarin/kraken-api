@@ -156,7 +156,7 @@ impl Endpoint for SendOrder {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum EventType {
     Place,
@@ -166,7 +166,7 @@ pub enum EventType {
     Execution,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum OrderTypeResp {
     #[serde(rename = "lmt")]
     Limit,
@@ -186,7 +186,7 @@ pub enum OrderTypeResp {
     Block,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Order {
     pub cli_ord_id: Option<String>,
@@ -203,14 +203,14 @@ pub struct Order {
     pub r#type: OrderTypeResp,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum TriggerSide {
     TriggerAbove,
     TriggerBelow,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum TriggerSignalResp {
     MarkPrice,
@@ -218,7 +218,7 @@ pub enum TriggerSignalResp {
     SpotPrice,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderTrigger {
     pub client_id: Option<String>,
@@ -239,14 +239,14 @@ pub struct OrderTrigger {
     pub r#type: OrderTypeResp,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaceTriggerEvent {
     pub order_trigger: OrderTrigger,
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelTriggerEvent {
     pub order_trigger: OrderTrigger,
@@ -254,7 +254,7 @@ pub struct CancelTriggerEvent {
     pub uid: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RejectTriggerEvent {
     pub order_trigger: OrderTrigger,
@@ -263,7 +263,7 @@ pub struct RejectTriggerEvent {
     pub uid: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct EditEvent {
     pub new: Order,
@@ -272,7 +272,7 @@ pub struct EditEvent {
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaceEvent {
     pub order: Order,
@@ -280,14 +280,14 @@ pub struct PlaceEvent {
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct CancelEvent {
     pub order: Order,
     pub uid: String,
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RejectEvent {
     pub order: Order,
@@ -296,7 +296,7 @@ pub struct RejectEvent {
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecuteEvent {
     pub amount: f64,
@@ -308,7 +308,7 @@ pub struct ExecuteEvent {
     pub r#type: EventType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum RejectReason {
     PostWouldExecute,
@@ -329,7 +329,7 @@ pub enum OrderEvent {
     RejectTriggerEvent(RejectTriggerEvent),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum SendOrderStatus {
     Placed,
@@ -365,7 +365,7 @@ pub enum SendOrderStatus {
     WouldProcessAfterSpecifiedTime,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SendStatus {
     #[serde(rename = "order_id")]
@@ -376,7 +376,7 @@ pub struct SendStatus {
     pub order_events: Vec<OrderEvent>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SendOrderResp {
     pub result: String,

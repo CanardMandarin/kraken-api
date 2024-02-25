@@ -34,7 +34,7 @@ impl Endpoint for Balance {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct BalanceResp {
     pub result: HashMap<String, String>,
 }

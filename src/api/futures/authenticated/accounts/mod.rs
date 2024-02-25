@@ -37,13 +37,13 @@ impl Endpoint for Accounts {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct CashAccount {
     pub balances: HashMap<String, f64>,
     pub r#type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct MarginAccountAuxiliary {
     pub af: f64,
     pub funding: f64,
@@ -52,7 +52,7 @@ pub struct MarginAccountAuxiliary {
     pub usd: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct MarginAccountRequirements {
     pub im: f64,
     pub lt: f64,
@@ -60,7 +60,7 @@ pub struct MarginAccountRequirements {
     pub tt: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MarginAccount {
     pub auxiliary: MarginAccountAuxiliary,
@@ -71,7 +71,7 @@ pub struct MarginAccount {
     pub r#type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct MultiCollateralMarginAccountCurrency {
     pub available: f64,
     pub collateral: f64,
@@ -79,7 +79,7 @@ pub struct MultiCollateralMarginAccountCurrency {
     pub value: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MultiCollateralMarginAccount {
     pub available_margin: f64,
@@ -96,14 +96,14 @@ pub struct MultiCollateralMarginAccount {
     pub unrealized_funding: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum FuturesAccount {
     CashAccount(CashAccount),
     MarginAccount(MarginAccount),
     MultiCollateralMarginAccount(MultiCollateralMarginAccount),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountsResp {
     pub result: String,

@@ -44,7 +44,7 @@ impl Endpoint for HistoricalFundingRates {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub enum Side {
     #[serde(rename = "long")]
     Long,
@@ -52,7 +52,7 @@ pub enum Side {
     Short,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 
 pub struct FundingRate {
@@ -61,7 +61,7 @@ pub struct FundingRate {
     pub timestamp: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct HistoricalFundingRatesResp {
     pub result: String,

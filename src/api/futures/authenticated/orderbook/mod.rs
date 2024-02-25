@@ -44,19 +44,19 @@ impl Endpoint for OrderBook {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct OrderBookEntry {
     pub price: f64,
     pub size: f64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct OrderBookWrapper {
     pub asks: Vec<OrderBookEntry>,
     pub bids: Vec<OrderBookEntry>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderBookResp {
     pub order_book: OrderBookWrapper,
