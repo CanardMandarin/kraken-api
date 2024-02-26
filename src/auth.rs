@@ -106,10 +106,7 @@ impl Auth {
     fn generate_nonce(&self) -> u64 {
         let start = SystemTime::now();
         let since_epoch = start.duration_since(UNIX_EPOCH).unwrap();
-        let timestamp =
-            since_epoch.as_secs() * 1000 + since_epoch.subsec_nanos() as u64 / 1_000;
-
-        timestamp + 1
+        since_epoch.as_millis() as u64
     }
 }
 
@@ -121,6 +118,18 @@ impl Auth {
 //     use serde_json::{Map, Number, Value};
 //     use sha2::{Digest, Sha256, Sha512};
 //     use std::time::{SystemTime, UNIX_EPOCH};
+
+//     use crate::auth::Auth;
+
+//     #[test]
+//     fn nonce() {
+//         let auth = Auth {
+//             api_key: "".to_owned(),
+//             private_key: vec![]
+//         };
+
+//         println!("nonce {:?}", auth.generate_nonce());
+//     }
 
 //     #[test]
 //     fn it_works() {

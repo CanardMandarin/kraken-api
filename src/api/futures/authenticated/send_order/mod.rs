@@ -292,7 +292,7 @@ pub struct CancelEvent {
 pub struct RejectEvent {
     pub order: Order,
     pub uid: String,
-    pub reason: RejectReason,
+    pub reason: String,
     pub r#type: EventType,
 }
 
@@ -306,15 +306,6 @@ pub struct ExecuteEvent {
     pub price: f64,
     pub taker_reduced_quantity: Option<f64>,
     pub r#type: EventType,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub enum RejectReason {
-    PostWouldExecute,
-    IocWouldNotExecute,
-    WouldNotReducePosition,
-    OrderForEditNotFound,
 }
 
 #[derive(Debug, Clone)]
@@ -396,7 +387,6 @@ impl<'de> Deserialize<'de> for OrderEvent {
 
         // Check if "type" field exists
         if let Some(account_type) = value.get("type") {
-            println!("{:?}", account_type);
             match account_type.as_str() {
                 Some("PLACE") => {
                     if is_trigger {
