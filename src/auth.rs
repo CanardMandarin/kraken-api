@@ -3,7 +3,7 @@ use hmac::Hmac;
 use http::{HeaderMap, HeaderValue};
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256, Sha512};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{sync::atomic::{AtomicU64, Ordering}, time::{SystemTime, UNIX_EPOCH}};
 
 use crate::api::endpoint::EndpointType;
 
@@ -11,6 +11,7 @@ use crate::api::endpoint::EndpointType;
 pub struct Auth {
     api_key: String,
     private_key: Vec<u8>,
+    nonce_counter: AtomicU64,
 }
 
 impl Auth {
@@ -18,6 +19,7 @@ impl Auth {
         Self {
             api_key,
             private_key: BASE64_STANDARD.decode(private_key).unwrap(),
+            nonce_counter: AtomicU64::new(0),
         }
     }
 
@@ -104,9 +106,14 @@ impl Auth {
     }
 
     fn generate_nonce(&self) -> u64 {
+        // Use atomic increment for nonce
+        let nonce = self.nonce_counter.fetch_add(1, Ordering::SeqCst);
+
         let start = SystemTime::now();
         let since_epoch = start.duration_since(UNIX_EPOCH).unwrap();
-        since_epoch.as_millis() as u64
+        let timestamp_nonce = (since_epoch.as_millis() as u64) << 20 | nonce;
+
+        timestamp_nonce
     }
 }
 
