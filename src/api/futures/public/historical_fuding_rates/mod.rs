@@ -28,10 +28,6 @@ impl Endpoint for HistoricalFundingRates {
         String::from("/derivatives/api/v4/historicalfundingrates")
     }
 
-    fn is_authenticated(&self) -> bool {
-        true
-    }
-
     fn endpoint_type(&self) -> EndpointType {
         EndpointType::Futures
     }

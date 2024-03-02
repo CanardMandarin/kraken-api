@@ -1,14 +1,11 @@
 use kraken_api::{
     api::{
-        futures::authenticated::{
+        futures::{authenticated::{
             accounts::{Accounts, AccountsResp},
-            historical_fuding_rates::{HistoricalFundingRates, HistoricalFundingRatesResp},
-            instruments::{Instruments, InstrumentsResp},
             open_positions::{OpenPositions, OpenPositionsResp},
-            orderbook::{OrderBook, OrderBookResp},
             send_order::{OrderSide, OrderType, SendOrder, SendOrderResp},
             withdrawal::{Withdrawal, WithdrawalResp},
-        },
+        }, public::{historical_fuding_rates::{HistoricalFundingRates, HistoricalFundingRatesResp}, instruments::{Instruments, InstrumentsResp}, orderbook::{OrderBook, OrderBookResp}}},
         query::AsyncQuery,
         spot::authenticated::{
             account::{

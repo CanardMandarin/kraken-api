@@ -246,26 +246,29 @@ impl AsyncClient for AsyncKraken {
                 );
             }
 
-            // Build the request.
-            let encoded_body = if let Some(Some(content_type)) = request_builder
-                .headers_ref()
-                .map(|h| h.get(header::CONTENT_TYPE))
-            {
-                match content_type.to_str().unwrap() {
-                    "application/x-www-form-urlencoded" => {
-                        serde_urlencoded::to_string(&body).unwrap()
-                    }
-                    "application/json" => serde_json::to_string(&body).unwrap(),
-                    _ => "".to_owned(),
-                }
-            } else {
-                "".to_owned()
-            };
+            // // Build the request.
+            // let encoded_body = if let Some(Some(content_type)) = request_builder
+            //     .headers_ref()
+            //     .map(|h| h.get(header::CONTENT_TYPE))
+            // {
+            //     match content_type.to_str().unwrap() {
+            //         "application/x-www-form-urlencoded" => {
+            //             serde_urlencoded::to_string(&body).unwrap()
+            //         }
+            //         "application/json" => serde_json::to_string(&body).unwrap(),
+            //         _ => "".to_owned(),
+            //     }
+            // } else {
+            //     "".to_owned()
+            // }.into_bytes();
 
-            let http_request = request_builder.body(encoded_body)?;
+            let http_request = request_builder.body(vec![])?;
+
 
             // Convert it to a reqwest::Request type and send it.
             let request = http_request.try_into()?;
+            println!("{:#?}", request);
+
             let rsp = self.client.execute(request).await?;
 
             // Build the HTTP response.

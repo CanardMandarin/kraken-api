@@ -28,10 +28,6 @@ impl Endpoint for OrderBook {
         String::from("/derivatives/api/v3/orderbook")
     }
 
-    fn is_authenticated(&self) -> bool {
-        true
-    }
-
     fn endpoint_type(&self) -> EndpointType {
         EndpointType::Futures
     }
