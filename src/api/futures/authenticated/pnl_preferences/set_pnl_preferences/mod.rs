@@ -9,7 +9,7 @@ use crate::api::endpoint::{Endpoint, EndpointType};
 #[builder(setter(into))]
 #[serde(rename_all = "camelCase")]
 pub struct SetPnlPreferences {
-    pub pnl_preference: f64,
+    pub pnl_preference: String,
     pub symbol: String,
 }
 impl SetPnlPreferences {
