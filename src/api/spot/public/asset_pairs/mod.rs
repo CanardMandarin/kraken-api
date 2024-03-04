@@ -4,6 +4,7 @@ use crate::api::{endpoint::Endpoint, params::QueryParams};
 use derive_builder::Builder;
 use http::Method;
 use serde::{Deserialize, Serialize};
+use serde_aux::prelude::deserialize_number_from_string;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Default)]
 pub enum AssetPairsInfo {
@@ -94,9 +95,12 @@ pub struct TradingPair {
     pub fee_volume_currency: String,
     pub margin_call: u32,
     pub margin_stop: u32,
-    pub ordermin: String,
-    pub costmin: String,
-    pub tick_size: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub ordermin: f64,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub costmin: f64,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub tick_size: f64,
     pub status: TradingPairStatus,
     pub long_position_limit: u32,
     pub short_position_limit: u32,
