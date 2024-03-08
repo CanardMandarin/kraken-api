@@ -102,8 +102,8 @@ pub struct TradingPair {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub tick_size: f64,
     pub status: TradingPairStatus,
-    pub long_position_limit: u32,
-    pub short_position_limit: u32,
+    pub long_position_limit: Option<u32>,
+    pub short_position_limit: Option<u32>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
