@@ -46,10 +46,10 @@ pub struct MarginLevel {
 pub struct Instrument {
     pub symbol: String,
     pub category: Option<String>,
-    pub contract_size: Option<u32>,
-    pub contract_value_trade_precision: Option<u32>,
+    pub contract_size: Option<i32>,
+    pub contract_value_trade_precision: Option<i32>,
     pub fee_schedule_uid: Option<String>,
-    pub funding_rate_coefficient: Option<u32>,
+    pub funding_rate_coefficient: Option<i32>,
     pub impact_mid_size: Option<f64>,
     pub isin: Option<String>,
     pub last_trading_time: Option<String>,
