@@ -7,6 +7,7 @@ use crate::api::endpoint::{Endpoint, EndpointType};
 
 #[derive(Debug, Clone, Builder, Default, Serialize)]
 #[builder(setter(strip_option, into), default)]
+#[serde(rename_all = "camelCase")]
 pub struct Withdrawal {
     pub amount: String,
     pub currency: String,
