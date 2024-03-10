@@ -53,5 +53,5 @@ pub struct WalletTransferRef {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct WalletTransferResp {
-    pub result: WalletTransferRef,
+    pub result: Option<WalletTransferRef>,
 }
