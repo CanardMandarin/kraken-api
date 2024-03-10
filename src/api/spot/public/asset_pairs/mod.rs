@@ -22,7 +22,7 @@ pub enum AssetPairsInfo {
 #[derive(Debug, Clone, Builder, Default)]
 #[builder(setter(strip_option, into), default)]
 pub struct AssetPairs {
-    pub pair: String,
+    pub pair: Option<String>,
     pub info: Option<AssetPairsInfo>,
 }
 
@@ -43,11 +43,14 @@ impl Endpoint for AssetPairs {
 
     fn parameters(&self) -> Option<QueryParams> {
         let mut params = QueryParams::default();
-        params.push("pair", self.pair.to_string());
 
-        // if let Some(info) = &self.info {
-        //     params.push("info", serde_json::to_string(info).unwrap());
-        // }
+        if let Some(pair) = &self.pair {
+            params.push("pair", pair.to_string());
+        }
+
+        if let Some(info) = &self.info {
+            params.push("info", serde_json::to_string(info).unwrap());
+        }
 
         Some(params)
     }
