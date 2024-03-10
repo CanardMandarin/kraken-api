@@ -4,10 +4,10 @@ use serde::Deserialize;
 
 use crate::api::endpoint::{Endpoint, EndpointType};
 
-#[derive(Debug, Clone, Builder, Default)]
-#[builder(setter(strip_option, into), default)]
+#[derive(Debug, Clone, Builder)]
+#[builder(setter(into))]
 pub struct Ticker {
-    pub symbol: Option<String>,
+    pub symbol: String,
 }
 
 impl Ticker {
@@ -23,11 +23,7 @@ impl Endpoint for Ticker {
 
     fn endpoint(&self) -> String {
         let mut endpoint = String::from("derivatives/api/v3/tickers/");
-
-        if let Some(symbol) = &self.symbol {
-            endpoint.push_str(&symbol);
-        }
-
+        endpoint.push_str(&self.symbol);
         endpoint
     }
 
@@ -65,6 +61,7 @@ pub struct TickerJson {
     pub vol24h: f64,
     pub volume_quote: f64,
 }
+
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
