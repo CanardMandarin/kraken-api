@@ -5,7 +5,7 @@ use serde::Deserialize;
 use crate::api::endpoint::{Endpoint, EndpointType};
 
 #[derive(Debug, Clone, Builder)]
-#[builder(setter(into))]
+#[builder(setter(strip_option, into), default)]
 pub struct Ticker {
     pub symbol: Option<String>,
 }
