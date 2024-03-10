@@ -22,7 +22,7 @@ impl Endpoint for Tickers {
     }
 
     fn endpoint(&self) -> String {
-        let mut endpoint = String::from("derivatives/api/v3/tickers/");
+        let endpoint = String::from("derivatives/api/v3/tickers/");
 
         endpoint
     }
@@ -38,7 +38,7 @@ impl Endpoint for Tickers {
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct TickerResp {
+pub struct TickersResp {
     pub result: String,
     pub tickers: Vec<TickerJson>,
     pub server_time: String,
