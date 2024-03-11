@@ -9,7 +9,8 @@ use crate::api::endpoint::{Endpoint, EndpointType};
 #[builder(setter(into))]
 #[serde(rename_all = "camelCase")]
 pub struct SetLeveragePreferences {
-    pub max_leverage: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_leverage: Option<f64>,
     pub symbol: String,
 }
 impl SetLeveragePreferences {
