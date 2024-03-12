@@ -29,7 +29,7 @@ pub enum OrderType {
     TrailingStop,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
 pub enum OrderSide {
     #[default]
     #[serde(rename = "buy")]

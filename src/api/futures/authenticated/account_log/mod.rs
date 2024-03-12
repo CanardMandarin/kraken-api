@@ -8,7 +8,7 @@ use crate::api::{
     params::QueryParams,
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
 pub enum AccountLogInfo {
     #[default]
     #[serde(rename = "futures trade")]
@@ -37,7 +37,7 @@ pub enum AccountLogInfo {
     CrossExchangeTransfer,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq)]
 pub enum AccountLogSort {
     #[default]
     #[serde(rename = "asc")]
