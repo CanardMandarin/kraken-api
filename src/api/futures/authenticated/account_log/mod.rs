@@ -9,7 +9,7 @@ use crate::api::{
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub enum AccoumtLogInfo {
+pub enum AccountLogInfo {
     #[default]
     #[serde(rename = "futures trade")]
     FuturesTrade,
@@ -52,7 +52,7 @@ pub struct AccountLog {
     pub before: Option<u64>,
     pub count: Option<u64>,
     pub from: Option<String>,
-    pub info: Option<AccoumtLogInfo>,
+    pub info: Option<AccountLogInfo>,
     pub since: Option<u64>,
     pub sort: Option<AccountLogSort>,
     pub to: Option<u64>,
