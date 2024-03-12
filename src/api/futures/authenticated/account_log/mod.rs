@@ -128,7 +128,7 @@ pub struct Log {
     pub fee: Option<f64>,
     pub funding_rate: Option<f64>,
     pub id: i32,
-    pub info: AccoumtLogInfo,
+    pub info: AccountLogInfo,
     pub liquidation_fee: Option<f64>,
     pub margin_account: Option<String>,
     pub mark_price: Option<f64>,
