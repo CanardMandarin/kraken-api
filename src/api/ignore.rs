@@ -22,7 +22,7 @@ pub fn ignore<E>(endpoint: E) -> Ignore<E> {
 impl<E, C> Query<(), C> for Ignore<E>
 where
     E: Endpoint,
-    C: Client,
+    C: for<'a> Client<'a>,
 {
     fn query(&self, client: &C) -> Result<(), ApiError<C::Error>> {
         let is_authenicated = self.endpoint.is_authenticated();
@@ -33,7 +33,8 @@ where
         let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
-        if let Some(parameters) = self.endpoint.parameters() {
+        let params = self.endpoint.parameters();
+        if let Some(ref parameters) = params {
             parameters.add_to_url(&mut url);
         }
 
@@ -52,6 +53,7 @@ where
         let rsp = client.rest(
             request_builder,
             body,
+            params,
             is_authenicated.then_some(endpoint),
             &endpoint_type,
         )?;
@@ -83,7 +85,7 @@ where
 impl<E, C> AsyncQuery<(), C> for Ignore<E>
 where
     E: Endpoint + Sync,
-    C: AsyncClient + Sync,
+    C: for<'a> AsyncClient<'a> + Sync,
 {
     async fn query_async(&self, client: &C) -> Result<(), ApiError<C::Error>> {
         let is_authenicated = self.endpoint.is_authenticated();
@@ -94,7 +96,8 @@ where
         let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
-        if let Some(parameters) = self.endpoint.parameters() {
+        let params = self.endpoint.parameters();
+        if let Some(ref parameters) = params {
             parameters.add_to_url(&mut url);
         }
 
@@ -114,6 +117,7 @@ where
             .rest_async(
                 request_builder,
                 body,
+                params,
                 is_authenicated.then_some(endpoint),
                 &endpoint_type,
             )

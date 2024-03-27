@@ -8,7 +8,7 @@ use url::Url;
 
 use crate::api::error::ApiError;
 
-use super::endpoint::EndpointType;
+use super::{endpoint::EndpointType, params::QueryParams};
 
 /// A trait representing a client which can communicate with the Kraken REST API.
 pub trait RestClient {
@@ -26,12 +26,13 @@ pub trait RestClient {
 }
 
 /// A trait representing a client which can communicate with the Kraken REST API.
-pub trait Client: RestClient {
+pub trait Client<'a>: RestClient {
     /// Send a REST query.
     fn rest(
         &self,
         request_builder: RequestBuilder,
         body: serde_json::Map<String, Value>,
+        params: Option<QueryParams<'a>>,
         path_to_sign: Option<String>,
         endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<Self::Error>>;
@@ -39,12 +40,13 @@ pub trait Client: RestClient {
 
 /// A trait representing an asynchronous client which can communicate with the Kraken REST API.
 #[async_trait]
-pub trait AsyncClient: RestClient {
+pub trait AsyncClient<'a>: RestClient {
     /// Send a REST query asynchronously.
     async fn rest_async(
         &self,
         mut request_builder: RequestBuilder,
         mut body: serde_json::Map<String, Value>,
+        params: Option<QueryParams<'a>>,
         path_to_sign: Option<String>,
         endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<Self::Error>>;

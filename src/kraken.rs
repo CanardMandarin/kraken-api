@@ -11,7 +11,7 @@ use crate::{
     api::{
         client::{AsyncClient, Client, RestClient},
         endpoint::EndpointType,
-        error::ApiError,
+        error::ApiError, params::QueryParams,
     },
     auth::Auth,
 };
@@ -165,11 +165,12 @@ impl RestClient for AsyncKraken {
     }
 }
 
-impl Client for Kraken {
+impl Client<'_> for Kraken {
     fn rest(
         &self,
         mut request_builder: RequestBuilder,
         mut body: Map<String, Value>,
+        params: Option<QueryParams>,
         path_to_sign: Option<String>,
         endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<Self::Error>> {
@@ -180,6 +181,7 @@ impl Client for Kraken {
                     request_builder.headers_mut().unwrap(),
                     &path_to_sign,
                     &mut body,
+                    params,
                     endpoint_type,
                 );
             }
@@ -227,11 +229,12 @@ impl Client for Kraken {
 }
 
 #[async_trait]
-impl AsyncClient for AsyncKraken {
+impl<'a> AsyncClient<'a> for AsyncKraken {
     async fn rest_async(
         &self,
         mut request_builder: RequestBuilder,
         mut body: Map<String, Value>,
+        params: Option<QueryParams<'a>>,
         path_to_sign: Option<String>,
         endpoint_type: &EndpointType,
     ) -> Result<Response<Bytes>, ApiError<<Self as RestClient>::Error>> {
@@ -242,6 +245,7 @@ impl AsyncClient for AsyncKraken {
                     request_builder.headers_mut().unwrap(),
                     &path_to_sign,
                     &mut body,
+                    params,
                     endpoint_type,
                 );
             }

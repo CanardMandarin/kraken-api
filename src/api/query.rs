@@ -14,7 +14,7 @@ pub fn url_to_http_uri(url: Url) -> Uri {
 /// A trait which represents a query which may be made to the Kraken REST API.
 pub trait Query<T, C>
 where
-    C: Client,
+    C: for<'a> Client<'a>,
 {
     /// Perform the query against the client.
     fn query(&self, client: &C) -> Result<T, ApiError<C::Error>>;
@@ -24,7 +24,7 @@ where
 #[async_trait]
 pub trait AsyncQuery<T, C>
 where
-    C: AsyncClient,
+    C: for<'a> AsyncClient<'a>,
 {
     /// Perform the query asynchronously against the client.
     async fn query_async(&self, client: &C) -> Result<T, ApiError<C::Error>>;

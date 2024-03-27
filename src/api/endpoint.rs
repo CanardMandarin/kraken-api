@@ -52,7 +52,7 @@ impl<E, T, C> Query<T, C> for E
 where
     E: Endpoint,
     T: DeserializeOwned,
-    C: Client,
+    C: for<'a> Client<'a>,
 {
     fn query(&self, client: &C) -> Result<T, ApiError<C::Error>> {
         let is_authenicated = self.is_authenticated();
@@ -63,7 +63,8 @@ where
         let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
-        if let Some(parameters) = self.parameters() {
+        let params = self.parameters();
+        if let Some(ref parameters) = params {
             parameters.add_to_url(&mut url);
         }
 
@@ -82,6 +83,7 @@ where
         let rsp = client.rest(
             request_builder,
             body,
+            params,
             is_authenicated.then_some(endpoint),
             &endpoint_type,
         )?;
@@ -119,7 +121,7 @@ impl<E, T, C> AsyncQuery<T, C> for E
 where
     E: Endpoint + Sync,
     T: DeserializeOwned + 'static,
-    C: AsyncClient + Sync,
+    C: for<'a> AsyncClient<'a> + Sync,
 {
     async fn query_async(&self, client: &C) -> Result<T, ApiError<C::Error>> {
         let is_authenicated = self.is_authenticated();
@@ -130,7 +132,8 @@ where
         let mut url = client.rest_endpoint(&endpoint, &endpoint_type)?;
 
         // Add query parameters to the URL.
-        if let Some(parameters) = self.parameters() {
+        let params = self.parameters();
+        if let Some(ref parameters) = params {
             parameters.add_to_url(&mut url);
         }
 
@@ -150,6 +153,7 @@ where
             .rest_async(
                 request_builder,
                 body,
+                params,
                 is_authenicated.then_some(endpoint),
                 &endpoint_type,
             )

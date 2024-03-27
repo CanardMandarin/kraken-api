@@ -1,5 +1,4 @@
-use url::Url;
-
+use url::{form_urlencoded, Url};
 /// A structure for query parameters.
 #[derive(Debug, Default, Clone)]
 pub struct QueryParams<'a> {
@@ -33,5 +32,12 @@ impl<'a> QueryParams<'a> {
     pub fn add_to_url(&self, url: &mut Url) {
         let mut pairs = url.query_pairs_mut();
         pairs.extend_pairs(self.params.iter());
+    }
+
+    pub fn to_string(&self) -> String {
+        let mut serializer = form_urlencoded::Serializer::new(String::new());
+        serializer.extend_pairs(self.params.iter());
+
+        serializer.finish()
     }
 }

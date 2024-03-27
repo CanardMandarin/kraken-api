@@ -3,9 +3,12 @@ use hmac::Hmac;
 use http::{HeaderMap, HeaderValue};
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256, Sha512};
-use std::{sync::atomic::{AtomicU64, Ordering}, time::{SystemTime, UNIX_EPOCH}};
+use std::{
+    sync::atomic::{AtomicU64, Ordering},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
-use crate::api::endpoint::EndpointType;
+use crate::api::{endpoint::EndpointType, params::QueryParams};
 
 #[derive(Debug)]
 pub struct Auth {
@@ -29,11 +32,12 @@ impl Auth {
         headers: &mut HeaderMap<HeaderValue>,
         path: &str,
         body: &mut Map<String, Value>,
+        params: Option<QueryParams>,
         endpoint_type: &EndpointType,
     ) {
         match endpoint_type {
-            EndpointType::Spot => self.set_headers_spot(headers, path, body),
-            EndpointType::Futures => self.set_headers_futures(headers, path, body),
+            EndpointType::Spot => self.set_headers_spot(headers, path, body, params),
+            EndpointType::Futures => self.set_headers_futures(headers, path, body, params),
         }
     }
 
@@ -42,6 +46,7 @@ impl Auth {
         headers: &mut HeaderMap<HeaderValue>,
         path: &str,
         body: &mut Map<String, Value>,
+        _params: Option<QueryParams>,
     ) {
         let nonce = self.generate_nonce();
 
@@ -71,9 +76,15 @@ impl Auth {
         headers: &mut HeaderMap<HeaderValue>,
         path: &str,
         body: &mut Map<String, Value>,
+        params: Option<QueryParams>,
     ) {
         let nonce = self.generate_nonce();
-        let encoded_body = serde_urlencoded::to_string(&body).unwrap();
+
+        let mut encoded_body = serde_urlencoded::to_string(&body).unwrap();
+
+        if let Some(ref parameters) = params {
+            encoded_body += &parameters.to_string()
+        }
 
         let real_path = if path.starts_with("/derivatives") {
             &path[12..]
@@ -82,7 +93,7 @@ impl Auth {
         };
 
         let mut sha256 = Sha256::new();
-        if !body.is_empty() {
+        if !body.is_empty() || params.is_some() {
             Sha256::update(&mut sha256, encoded_body.as_bytes());
         }
 
